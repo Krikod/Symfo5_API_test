@@ -6,20 +6,39 @@ use App\Repository\CategorieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="categorie")
+ */
 class Categorie
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+	/**
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 * @ORM\Column(type="integer")
+	 * @Groups("annonce:read")
+	 */
+	private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $nom;
+	/**
+	 * @ORM\Column(type="string")
+	 * @Groups("annonce:read")
+	 */
+	private $nom;
 
     #[ORM\OneToMany(mappedBy: 'relation', targetEntity: Annonce::class)]
-    private $annonces;
+	/**
+	 * @ORM\Column(type="string")
+	 */
+	private $annonces;
 
     public function __construct()
     {

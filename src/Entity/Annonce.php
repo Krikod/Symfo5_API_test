@@ -4,27 +4,62 @@ namespace App\Entity;
 
 use App\Repository\AnnonceRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AnnonceRepository::class)]
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="annonce")
+ */
 class Annonce
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+	/**
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 * @ORM\Column(type="integer")
+	 * @Groups("annonce:read")
+	 */
+	private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $titre;
+	/**
+	 * @ORM\Column(type="string")
+	 * @Groups("annonce:read")
+	 */
+	private $titre;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $marque;
+	/**
+	 * @ORM\Column(type="string")
+	 * @Groups("annonce:read")
+	 */
+	private $marque;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $modele;
+	/**
+	 * @ORM\Column(type="string")
+	 * @Groups("annonce:read")
+	 */
+	private $modele;
 
     #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'annonces')]
     #[ORM\JoinColumn(nullable: false)]
-    private $categorie;
+	/**
+	 * @ORM\Column(type="string")
+	 * @Groups("annonce:read")
+	 */
+	private $categorie;
+
+    #[ORM\Column(type: 'text')]
+	/**
+	 * @ORM\Column(type="string")
+	 * @Groups("annonce:read")
+	 */
+	private $contenu;
 
     public function getId(): ?int
     {
@@ -75,6 +110,18 @@ class Annonce
     public function setCategorie(?Categorie $categorie): self
     {
         $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getContenu(): ?string
+    {
+        return $this->contenu;
+    }
+
+    public function setContenu(string $contenu): self
+    {
+        $this->contenu = $contenu;
 
         return $this;
     }
