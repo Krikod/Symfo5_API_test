@@ -19,27 +19,34 @@ class Categorie
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-	/**
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @ORM\Column(type="integer")
-	 * @Groups("annonce:read")
-	 */
-	private $id;
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @Groups({"get"})
+     */
+    private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-	/**
-	 * @ORM\Column(type="string")
-	 * @Groups("annonce:read")
-	 */
-	private $nom;
+    /**
+     * @ORM\Column(type="string")
+     * @Groups({"get"})
+     */
+    private $nom;
 
-    #[ORM\OneToMany(mappedBy: 'relation', targetEntity: Annonce::class)]
+    #[ORM\OneToMany(mappedBy: 'categorie', targetEntity: Annonce::class)]
 	/**
+	 * @var ArrayCollection
+	 *
 	 * @ORM\Column(type="string")
+	 * @ORM\OneToMany(targetEntity=Annonce::class, mappedBy="categorie")
+	 *
 	 */
-	private $annonces;
+    private $annonces;
 
+	/**
+	 * Categorie constructor.
+	 */
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
@@ -70,11 +77,16 @@ class Categorie
         return $this->annonces;
     }
 
+	/**
+	 * @param Annonce $annonce
+	 *
+	 * @return Categorie
+	 */
     public function addAnnonce(Annonce $annonce): self
     {
         if (!$this->annonces->contains($annonce)) {
             $this->annonces[] = $annonce;
-            $annonce->setRelation($this);
+            $annonce->setCategorie($this);
         }
 
         return $this;
@@ -84,8 +96,8 @@ class Categorie
     {
         if ($this->annonces->removeElement($annonce)) {
             // set the owning side to null (unless already changed)
-            if ($annonce->getRelation() === $this) {
-                $annonce->setRelation(null);
+            if ($annonce->getCategorie() === $this) {
+                $annonce->setCategorie(null);
             }
         }
 

@@ -5,63 +5,75 @@ namespace App\Entity;
 use App\Repository\AnnonceRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnnonceRepository::class)]
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="annonce")
+ * Class Annonce
+ * @package App\Entity
+ *
+ * @ORM\Entity(repositoryClass=AnnonceRepository::class)
+ * @ORM\Table(name="annonce", indexes={@ORM\Index(name="search_idx", columns={"modele"}, flags={"fulltext"})})
+ *
  */
 class Annonce
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-	/**
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 * @ORM\Column(type="integer")
-	 * @Groups("annonce:read")
-	 */
-	private $id;
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @Groups({"get", "search"})
+     */
+    private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-	/**
-	 * @ORM\Column(type="string")
-	 * @Groups("annonce:read")
-	 */
-	private $titre;
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Le titre est obligatoire")
+     * @Groups({"get"})
+     *
+     */
+    private $titre;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-	/**
-	 * @ORM\Column(type="string")
-	 * @Groups("annonce:read")
-	 */
-	private $marque;
+    /**
+     * @ORM\Column(type="string")
+     * @Groups({"get", "search"})
+     *
+     */
+    private $marque;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-	/**
-	 * @ORM\Column(type="string")
-	 * @Groups("annonce:read")
-	 */
-	private $modele;
+    /**
+     * @ORM\Column(type="string")
+     * @Groups({"get", "search"})
+     */
+    private $modele;
 
-    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'annonces')]
+    #[ORM\ManyToOne(targetEntity: Categorie::class, inversedBy: 'annonces', cascade:['persist'])]
     #[ORM\JoinColumn(nullable: false)]
-	/**
-	 * @ORM\Column(type="string")
-	 * @Groups("annonce:read")
-	 */
-	private $categorie;
+    /**
+     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=Categorie::class, inversedBy="annonces", cascade={"persist"})
+     * @Assert\NotBlank(message="La catégorie est obligatoire")
+     * @Groups({"get"})
+     */
+    private $categorie;
 
     #[ORM\Column(type: 'text')]
-	/**
-	 * @ORM\Column(type="string")
-	 * @Groups("annonce:read")
-	 */
-	private $contenu;
+    /**
+     * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="Le contenu est obligatoire")
+     * @Groups({"get"})
+     */
+    private $contenu;
 
-    public function getId(): ?int
+
+	public function getId(): ?int
     {
         return $this->id;
     }
@@ -109,7 +121,7 @@ class Annonce
 
     public function setCategorie(?Categorie $categorie): self
     {
-        $this->categorie = $categorie;
+    	$this->categorie = $categorie;
 
         return $this;
     }
